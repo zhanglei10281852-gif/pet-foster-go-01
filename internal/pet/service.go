@@ -75,14 +75,7 @@ func (s *Service) Logout(ctx context.Context, principal Principal) error {
 	if principal.UserID == 0 {
 		return ErrUnauthenticated
 	}
-	var activeSessions int
-	if err := s.store.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM pet_sessions WHERE user_id=? AND revoked_at IS NULL`, principal.UserID).Scan(&activeSessions); err != nil {
-		return err
-	}
-	if activeSessions == 0 {
-		return ErrUnauthenticated
-	}
-	if _, err := s.store.db.ExecContext(ctx, `UPDATE pet_sessions SET revoked_at=? WHERE user_id=? AND revoked_at IS NULL`, formatStoredTime(s.now()), principal.UserID); err != nil {
+	if _, err := s.store.db.ExecContext(ctx, `UPDATE pet_sessions SET revoked_at=? WHERE session_id=? AND revoked_at IS NULL`, formatStoredTime(s.now()), principal.SessionID); err != nil {
 		return err
 	}
 	return nil
