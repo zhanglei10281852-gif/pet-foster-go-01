@@ -1,0 +1,30 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      HTTP_ADDR: ":8080"
+      PET_DATABASE_PATH: "/var/lib/pet-foster/pet-foster.db"
+    volumes:
+      - pet-foster-data:/var/lib/pet-foster
+    healthcheck:
+      test: ["CMD", "/pet-foster-server", "--healthcheck"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend-admin
+      dockerfile: Dockerfile
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "8088:80"
+    restart: unless-stopped
+
+volumes:
+  pet-foster-data:

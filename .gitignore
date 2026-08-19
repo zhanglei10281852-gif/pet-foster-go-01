@@ -1,0 +1,10 @@
+/bin/
+/data/
+/.env
+*.db
+*.db-shm
+*.db-wal
+coverage.out
+*.exe
+frontend-admin/node_modules/
+frontend-admin/dist/
